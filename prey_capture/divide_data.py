@@ -4,6 +4,10 @@ import numpy as np
 def divide_by_stimulus_type(path):
 
     data = pd.read_csv(path)
+    ### There will be multiple of the same stimulus in one file
+    ### Stimulus types separated by STIM0
+
+
 
     stim0 = data[data['STIM_type']==0]
     stim1 = data[data['STIM_type']==1]
