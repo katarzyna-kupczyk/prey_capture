@@ -7,17 +7,13 @@ def divide_by_stimulus_type(path):
     ### There will be multiple of the same stimulus in one file
     ### Stimulus types separated by STIM0
 
+    for stim_type in data['STIM_type'].unique():
+        for ampl_rot in data['AMPL_rot'].unique():
+            stim = data[(data['STIM_type']==stim_type) & (data['AMPL_rot']==ampl_rot)]
+            stim = stim.reset_index()
+            stim.to_csv(f'../raw_data/stim{stim.loc[0,"STIM_type"]}_ampl{stim.loc[0,"AMPL_rot"]}.csv')
 
-
-    stim0 = data[data['STIM_type']==0]
-    stim1 = data[data['STIM_type']==1]
-    stim2 = data[data['STIM_type']==2]
-    stim3 = data[data['STIM_type']==3]
-    stim4 = data[data['STIM_type']==4]
-    stim5 = data[data['STIM_type']==5]
-    stim6 = data[data['STIM_type']==6]
-    stim7 = data[data['STIM_type']==7]
-    stim8 = data[data['STIM_type']==8]
-    stim9 = data[data['STIM_type']==9]
-
-    return stim0, stim1, stim2, stim3, stim4, stim5, stim6, stim7, stim8, stim9
+    ### Save divided data into csv files
+if __name__ == "__main__":
+    path = input('Path: ')
+    divide_by_stimulus_type(path)
