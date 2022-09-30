@@ -65,6 +65,7 @@ def divide_and_preprocess_1_param(data, needed_params, final_dict):
             ### Resetting index to integers
             interp = interp.reset_index()
             interp = interp.drop(columns=['tstpdate', 'level_0'])
+            json_interp = interp.to_json()
 
-            final_dict[f'{needed_params[0]}_{p0}'].append(interp)
+            final_dict[f'{needed_params[0]}_{p0}'].append(json_interp)
     return final_dict

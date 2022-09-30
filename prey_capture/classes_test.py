@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+import json
 from preprocess_1_param import divide_and_preprocess_1_param
 from preprocess_2_param import divide_and_preprocess_2_params
 from preprocess_3_param import divide_and_preprocess_3_params
@@ -95,4 +96,6 @@ if __name__=="__main__":
     folder = Divide_And_Process.folder_input()
     df_list = folder.load_data()
     final_list_of_fish_dicts = folder.divide_and_process()
-    print(final_list_of_fish_dicts)
+    json_path = input('Where to save the JSON?: ')
+    with open(json_path, 'w') as file_out:
+        json.dump(final_list_of_fish_dicts, file_out)
