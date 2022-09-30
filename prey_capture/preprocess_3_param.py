@@ -26,7 +26,7 @@ def divide_and_preprocess_3_params(data, needed_params, final_dict):
 
                         elif np.abs(new.at[i + 1, 'CUM_angle'] - new.at[i, 'CUM_angle']) >= np.pi/2:
                             #new.at[i + 1,'CUM_angle'] = new.at[i, 'CUM_angle']
-                            new.iloc[i+1:, 'CUM_angle'] -= (new.at[i+1, 'CUM_angle'] - new.at[i, 'CUM_angle'])
+                            new.loc[i+1:, 'CUM_angle'] -= (new.at[i+1, 'CUM_angle'] - new.at[i, 'CUM_angle'])
 
                 ### Get rid of stimulus columns
                     new = new.drop(columns=['STIM_type','SIZE_dot','DIST_dot','AMPL_rot','SPEED_rot','LUM_dot','BGLUM'])
@@ -64,8 +64,9 @@ def divide_and_preprocess_3_params(data, needed_params, final_dict):
                     ### Resetting index to integers
                     interp = interp.reset_index()
                     interp = interp.drop(columns=['tstpdate', 'level_0'])
+                    json_interp = interp.to_json()
 
                     final_dict[f'{needed_params[0]}_{p0}'][
                         f'{needed_params[1]}_{p1}'][
-                            f'{needed_params[2]}_{p2}'].append(interp)
+                            f'{needed_params[2]}_{p2}'].append(json_interp)
     return final_dict
