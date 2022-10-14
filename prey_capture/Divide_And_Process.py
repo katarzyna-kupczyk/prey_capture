@@ -71,13 +71,13 @@ class Divide_And_Process():
 
             ### Counter to separate repeating stimuli
             data.reset_index(inplace=True)
-            data.counter = 0
+            data.Counter = 0
             counter = 0
             first_index = 0
             for i, r in data[:-1].iterrows():
                 if data.iloc[i + 1].STIM_type != r.STIM_type:
                     counter += 1
-                    data.loc[first_index:i, 'counter'] = counter
+                    data.loc[first_index:i, 'Counter'] = counter
                     first_index = i + 1
 
             if len(needed_params) == 3:
