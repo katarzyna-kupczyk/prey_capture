@@ -7,8 +7,8 @@ def divide_and_preprocess_2_params(data, needed_params, final_dict):
     for p0 in data[needed_params[0]].unique():
         for p1 in data[needed_params[1]].unique():
             df = data[(data[needed_params[0]] == p0)
-                        & (data[needed_params[1]] == p1)].reset_index().drop(
-                            columns=['index'])
+                      & (data[needed_params[1]] == p1)].reset_index().drop(
+                          columns=['index'])
             df.Counter = df.Counter.map(
                 dict(
                     zip(df.Counter.unique(),
@@ -23,9 +23,12 @@ def divide_and_preprocess_2_params(data, needed_params, final_dict):
                     if i + 1 == len(new):
                         break
 
-                    elif np.abs(new.at[i + 1, 'CUM_angle'] - new.at[i, 'CUM_angle']) >= np.pi/2:
+                    elif np.abs(new.at[i + 1, 'CUM_angle'] -
+                                new.at[i, 'CUM_angle']) >= np.pi / 2:
                         #new.at[i + 1,'CUM_angle'] = new.at[i, 'CUM_angle']
-                        new.loc[i+1:, 'CUM_angle'] -= (new.at[i+1, 'CUM_angle'] - new.at[i, 'CUM_angle'])
+                        subtract = new.at[i + 1,
+                                          'CUM_angle'] - new.at[i, 'CUM_angle']
+                        new.loc[i + 1:, 'CUM_angle'] -= subtract
 
             ### Save AMPL_rot value for calculation of relative angle of stimulus to fish head later on
                 if p0 == 0:
@@ -34,7 +37,10 @@ def divide_and_preprocess_2_params(data, needed_params, final_dict):
                     stim_angle_column = new['AMPL_rot'].head(200)
 
             ### Get rid of stimulus columns
-                new = new.drop(columns=['STIM_type','SIZE_dot','DIST_dot','AMPL_rot','SPEED_rot','LUM_dot','BGLUM'])
+                new = new.drop(columns=[
+                    'STIM_type', 'SIZE_dot', 'DIST_dot', 'AMPL_rot',
+                    'SPEED_rot', 'LUM_dot', 'BGLUM'
+                ])
 
                 ### Resampling 4 second stimulus into 100 frames per second (10ms) and Interpolating
                 tstp = np.arange(0, 4, 4 / len(new))  ### 4 second stimulus
@@ -49,9 +55,6 @@ def divide_and_preprocess_2_params(data, needed_params, final_dict):
                 new_df.interpolate(method='linear', inplace=True)
 
                 interp = new_df.copy()
-
-                ### Set first cumulative angle to zero and adjust others
-                interp['CUM_angle'] -= interp['CUM_angle'][0]
 
                 ### Calculate Distance
                 ### distance = sqrt((x2-x1)**2 + (y2-y1)**2) new.at[row-1,'X']
@@ -78,6 +81,12 @@ def divide_and_preprocess_2_params(data, needed_params, final_dict):
                 interp['Distance_pts'] = gaussian_filter1d(
                     interp['Distance_pts'], 1)
                 interp.at[0, 'Distance_pts'] = 0
+                ### Set first cumulative angle to zero and adjust others
+                interp['CUM_angle'] -= interp['CUM_angle'][0]
+
+                ### Checking if len(interp) == 200
+                if len(interp) != 200:
+                    continue
 
                 ### Calculate Relative Angle of Stimulus in relation to fish
                 if p0 == 0:
@@ -88,8 +97,10 @@ def divide_and_preprocess_2_params(data, needed_params, final_dict):
                     interp['Relative_stim_angle'] = [ampl_rot/200*index for index,ampl_rot in \
                                                      enumerate(stim_angle_column)]
 
+
                 json_interp = interp.to_json()
 
                 final_dict[f'{needed_params[0]}_{p0}'][
                     f'{needed_params[1]}_{p1}'].append(json_interp)
+
     return final_dict

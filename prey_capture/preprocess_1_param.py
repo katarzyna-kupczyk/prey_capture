@@ -20,12 +20,10 @@ def divide_and_preprocess_1_param(data, needed_params, final_dict):
                 if i + 1 == len(new):
                     break
 
-                elif np.abs(new.at[i + 1, 'CUM_angle'] -
-                            new.at[i, 'CUM_angle']) >= np.pi / 2:
+                elif np.abs(new.at[i + 1, 'CUM_angle'] - new.at[i, 'CUM_angle']) >= np.pi / 2:
                     #new.at[i + 1,'CUM_angle'] = new.at[i, 'CUM_angle']
-                    new.loc[i + 1:,
-                             'CUM_angle'] -= (new.at[i + 1, 'CUM_angle'] -
-                                              new.at[i, 'CUM_angle'])
+                    subtract = new.at[i+1, 'CUM_angle'] - new.at[i, 'CUM_angle']
+                    new.loc[i+1:, 'CUM_angle'] -= subtract
 
         ### Save AMPL_rot value for calculation of relative angle of stimulus to fish head later on
                 if p0 == 0:
@@ -53,9 +51,6 @@ def divide_and_preprocess_1_param(data, needed_params, final_dict):
 
             interp = new_df.copy()
 
-            ### Set first cumulative angle to zero and adjust others
-            interp['CUM_angle'] -= interp['CUM_angle'][0]
-
             ### Calculate Distance
             ### distance = sqrt((x2-x1)**2 + (y2-y1)**2) new.at[row-1,'X']
             interp['Distance_pts'] = [np.sqrt((interp['X'][row]-interp['X'][row-1])**2 + \
@@ -79,6 +74,12 @@ def divide_and_preprocess_1_param(data, needed_params, final_dict):
             interp.at[0, 'Distance_pts'] = 0
             interp['Distance_pts'] = gaussian_filter1d(interp['Distance_pts'],1)
             interp.at[0, 'Distance_pts'] = 0
+            ### Set first cumulative angle to zero and adjust others
+            interp['CUM_angle'] -= interp['CUM_angle'][0]
+
+            ### Checking if len(interp) == 200
+            if len(interp) != 200:
+                continue
 
             ### Calculate Relative Angle of Stimulus in relation to fish
             if p0 == 0:
