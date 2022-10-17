@@ -33,8 +33,8 @@ class Divide_And_Process():
                 filenames.append(filename)
 
         # Looping through all csv files, dividing them and preprocessing
-
         self.data = [pd.read_csv(os.path.join(self.folder_path, f)) for f in filenames]
+
 
         return self.data
 
@@ -42,10 +42,8 @@ class Divide_And_Process():
 
         final_list_of_fish_dicts = []
         for data in self.data:
-            parameter_space = [
-                'STIM_type', 'SIZE_dot', 'DIST_dot', 'AMPL_rot', 'SPEED_rot',
-                'LUM_dot', 'BGLUM'
-            ]
+            parameter_space = ['STIM_type', 'SIZE_dot', 'DIST_dot', 'AMPL_rot', 'SPEED_rot',
+                'LUM_dot', 'BGLUM']
 
 
             needed_params = [param for param in parameter_space if len(data[param].unique()) > 1]
