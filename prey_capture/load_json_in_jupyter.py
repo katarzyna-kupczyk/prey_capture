@@ -15,7 +15,7 @@ def load_json_data(path):
         fish_dict = {}
         for stim_type in df.columns:
             fish_dict[stim_type] = []
-            for counter in range(len(df[stim_type][0])):
+            for counter in range(len(df[stim_type][0])-1):
                 dfdf = df[stim_type][i][counter]
                 dfdfdf = json.loads(dfdf)
                 norm_df = pd.json_normalize(dfdfdf, max_level=0)
