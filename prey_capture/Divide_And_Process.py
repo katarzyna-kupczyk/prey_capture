@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import json
+from natsort import natsorted
 from preprocess_1_param import divide_and_preprocess_1_param
 from preprocess_2_param import divide_and_preprocess_2_params
 from preprocess_3_param import divide_and_preprocess_3_params
@@ -27,11 +28,11 @@ class Divide_And_Process():
         # Putting all csv file paths into one list to loop through
         folder = os.fsencode(self.folder_path)
         filenames = []
-        for file in os.listdir(folder):
+        for file in natsorted(os.listdir(folder)):
             filename = os.fsdecode(file)
             if filename.endswith('.csv'):
                 filenames.append(filename)
-
+        print(filenames)
         # Looping through all csv files, dividing them and preprocessing
         self.data = [pd.read_csv(os.path.join(self.folder_path, f)) for f in filenames]
 
