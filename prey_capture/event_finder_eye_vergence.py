@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+from more_itertools import windowed
 from scipy.optimize import curve_fit
 
 
@@ -34,3 +36,41 @@ def calculate_eye_vergence_threshold(data):
     fwhm = 2 * np.sqrt(2 * np.log(2)) * sigma
 
     return fwhm
+
+
+def make_eye_vergence_event_table(df):
+
+    indices = np.arange(0,200)
+    zipped_right = list(zip(indices,df['R_EYE']))
+    scatter_right = []
+    for window in windowed(zipped_right, 6, step=5,fillvalue=(199,np.array(df['R_EYE'])[-1])):
+        if abs(window[-1][1]) - abs(window[0][1]) > 0.15:
+            scatter_right.append((window[0][0],window[-1][0]))
+
+    zipped_left = list(zip(indices,df['L_EYE']))
+    scatter_left = []
+    for window in windowed(zipped_left, 6, step=5,fillvalue=(199,np.array(df['L_EYE'])[-1])):
+        if abs(window[-1][1]) - abs(window[0][1]) > 0.15:
+            scatter_left.append((window[0][0],window[-1][0]))
+
+
+    tup_list = []
+    for tup in scatter_right:
+        if tup in scatter_left:
+            tup_list.append(tup)
+            print('Event')
+
+
+    event_df = pd.DataFrame(columns=['Event','Start_ind','End_ind','Delta_theta_left',\
+                                     'Delta_theta_right','Stimulus_angle'])
+    event_df['Event'] = np.arange((len(tup_list)))+1
+
+#     event_df['duration_s'] = []
+    event_df['Start_ind'] = [tup[0] for tup in tup_list]
+    event_df['End_ind'] = [tup[1] for tup in tup_list]
+    event_df['Delta_theta_left'] = [df['L_EYE'][tup[1]]-df['L_EYE'][tup[0]] for tup in tup_list]
+    event_df['Delta_theta_right'] = [df['R_EYE'][tup[1]]-df['R_EYE'][tup[0]] for tup in tup_list]
+    event_df['Stimulus_angle'] = [df['Relative_stim_angle'][tup[0]]]
+
+
+    return event_df
